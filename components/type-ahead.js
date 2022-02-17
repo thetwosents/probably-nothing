@@ -27,7 +27,10 @@ export default function Typeahead({
                 return 0;
             });
         }
-        setData(updated);
+        if (!data) {
+            setData(updated);
+        }
+        
     }, [data]);
 
     useEffect(() => {

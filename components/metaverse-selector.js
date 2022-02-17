@@ -5,12 +5,20 @@ import {
 import Typeahead from './type-ahead';
 
 export default function MetaverseSelector() {
-    const [state, setState] = useState(initialState);
+    const [state2, setState2] = useState(null);
+
+    useEffect(() => {
+        setState2(initialState);
+    }, []);
     const [selected, setSelected] = useState(null);
+
+    if (!state2) {
+        return null;
+    }
     return (
         <>
             <Typeahead
-                data_global={state.metaverses} />
+                data_global={state2.metaverses} />
         </>
     )
 }

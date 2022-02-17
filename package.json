@@ -14,6 +14,8 @@
   "dependencies": {
     "@antv/g6": "^4.5.1",
     "antd": "^4.18.2",
+    "firebase": "^9.6.6",
+    "grid-engine": "^2.12.0",
     "next": "^12.0.7",
     "re-resizable": "^6.9.1",
     "react": "^17.0.2",

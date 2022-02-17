@@ -107,7 +107,7 @@
 
 .message-item {
   display: flex;
-  padding: 5px 0;
+  padding: 2px 0;
   color: #000;
 }
 .message-item--other .message-item__screenname {

@@ -1,5 +1,22 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Draggable from 'react-draggable';
+import { initializeApp } from 'firebase/app';
+import { getDatabase, ref, onValue } from "firebase/database";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCJUINANA7kw6hXiX684vZV6ds9hmYOpW0",
+  authDomain: "gatekeeper-d13f9.firebaseapp.com",
+  databaseURL: "https://gatekeeper-d13f9-default-rtdb.firebaseio.com",
+  projectId: "gatekeeper-d13f9",
+  storageBucket: "gatekeeper-d13f9.appspot.com",
+  messagingSenderId: "602825357952",
+  appId: "1:602825357952:web:037e39f9448c077e374465"
+};
+
+const app = initializeApp(firebaseConfig);
+
+// Get a reference to the database service
+const database = getDatabase(app);
 
 const conversation = [
   {
@@ -51,29 +68,53 @@ const Navbar = ({chatName}) => {
 }
 
 const MessageItem = ({message, screenName, className}) => {
-  const { text, id } = message;
   return (
     <div className={`message-item ${className}`}>
       <div className="message-item__screenname">{screenName}:</div>
-      {text}
+      {message.message}
     </div>
   )
 }
 
 const MessageList = (props) => {
+  const [messages, setMessages] = React.useState([]);
+
+  // Monitor the onValue for any reference to "berserker" in the text
+  // If it's found, add a class to the message-item
+  
+  // Use firebase 
+  const commandRef = ref(database, 'commands');
+  onValue(commandRef, (snapshot) => {
+    const data = snapshot.val();
+    // data is a snapshot.val() object for it will not be a traditional array. To transform it we need to use Object.keys()
+    const keys = Object.keys(data);
+    const newMessages = keys.map((key) => {
+      const message = data[key];
+      return {
+        ...message,
+        id: key
+      }
+    });
+
+    if (messages.length !== newMessages.length) {
+      setMessages(newMessages);
+    }
+  });
+
+  useEffect(() => {
+    console.log('MessageList: useEffect');
+    console.log(messages);
+  }, [messages]);
+
   const { messageData, screenName, chatName } = props;
   const currentMessage = { text: "We've been waiting for you.", id: 1 };
   return (
     <div className="message-list">
       <div className="message-list__container">
-        <MessageItem
-          message={currentMessage}
-          className="message-item--other"
-          screenName={screenName}
-        />
-        { messageData.map((message, i) => {
+        {
+          messages.map((message, i) => {
             return (
-              <MessageItem message={message} screenName={screenName} key={i}/>
+              <MessageItem message={message} screenName={message.author} key={i}/>
             );
           })
         }
@@ -140,6 +181,7 @@ class InstantMessenger extends React.Component {
       data: [],
       value: ""
     };
+
   }
 
   addedMessage = (e, val) => {
